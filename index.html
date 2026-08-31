@@ -1,80 +1,1379 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Desafio do Caminhoneiro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Desafio do Caminhão</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#111;color:#fff;text-align:center}
-.wrap{max-width:520px;margin:auto;padding:18px}.logo{font-weight:900;font-size:24px;margin:8px 0 4px}.sub{color:#bbb;margin-bottom:15px}
-.card{background:#1d1d1d;border-radius:18px;padding:22px;box-shadow:0 8px 30px #0008}
-.road{height:150px;background:#444;border-radius:14px;position:relative;overflow:hidden;margin:15px 0}
-.road:before{content:"";position:absolute;left:50%;top:-20px;width:8px;height:190px;background:repeating-linear-gradient(#fff 0 22px,transparent 22px 42px);transform:translateX(-50%)}
-.truck{position:absolute;font-size:58px;bottom:28px;left:18px;transition:left .25s}
-.obstacle{position:absolute;font-size:38px;bottom:33px;right:35px}
-button{border:0;border-radius:12px;padding:15px 20px;margin:7px;font-size:17px;font-weight:700;cursor:pointer}
-.primary{background:#ffd21a;color:#111}.danger{background:#333;color:#fff}
-.hidden{display:none}.win{font-size:30px}.senha{font-size:25px;letter-spacing:2px;background:#000;padding:16px;border-radius:12px;margin:15px 0;word-break:break-all}
-.small{font-size:13px;color:#aaa}.bar{height:10px;background:#333;border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:#ffd21a}
+
+/* =========================
+   CONFIGURAÇÕES GERAIS
+========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(circle at top, #29313d, #090b0f 75%);
+    color: white;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow-x: hidden;
+}
+
+.game {
+    width: 95%;
+    max-width: 1100px;
+}
+
+/* =========================
+   CABEÇALHO
+========================= */
+
+.header {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 38px;
+    letter-spacing: 2px;
+}
+
+.header p {
+    color: #b9c0c9;
+}
+
+/* =========================
+   PAINEL
+========================= */
+
+.panel {
+    background: rgba(20, 24, 30, 0.95);
+    border: 2px solid #3b424d;
+    border-radius: 22px;
+
+    padding: 22px;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.65);
+}
+
+/* =========================
+   CENA
+========================= */
+
+.scene {
+    height: 360px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            #101923 0%,
+            #182533 50%,
+            #30343a 51%,
+            #17191c 100%
+        );
+
+    border: 2px solid #424b57;
+}
+
+/* LUA */
+
+.moon {
+    position: absolute;
+
+    width: 65px;
+    height: 65px;
+
+    right: 10%;
+    top: 35px;
+
+    border-radius: 50%;
+
+    background: #f4f4e9;
+
+    box-shadow:
+        0 0 25px #ffffff,
+        0 0 60px rgba(255,255,255,.3);
+}
+
+/* ESTRELAS */
+
+.star {
+    position: absolute;
+
+    width: 3px;
+    height: 3px;
+
+    background: white;
+
+    border-radius: 50%;
+
+    animation: twinkle 2s infinite alternate;
+}
+
+.star1 { left: 10%; top: 40px; }
+.star2 { left: 25%; top: 80px; }
+.star3 { left: 42%; top: 30px; }
+.star4 { left: 65%; top: 70px; }
+.star5 { left: 82%; top: 35px; }
+
+@keyframes twinkle {
+
+    from {
+        opacity: .2;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* =========================
+   ESTRADA
+========================= */
+
+.road {
+    position: absolute;
+
+    left: -5%;
+    bottom: -30px;
+
+    width: 110%;
+    height: 190px;
+
+    background: #272b30;
+
+    transform: perspective(500px) rotateX(8deg);
+}
+
+/* FAIXAS DA ESTRADA */
+
+.road-line {
+    position: absolute;
+
+    bottom: 65px;
+
+    width: 120px;
+    height: 8px;
+
+    background: #eee;
+
+    animation: roadMove 1.2s linear infinite;
+}
+
+.line1 {
+    left: 0;
+}
+
+.line2 {
+    left: 40%;
+}
+
+.line3 {
+    left: 80%;
+}
+
+@keyframes roadMove {
+
+    from {
+        transform: translateX(-150px);
+    }
+
+    to {
+        transform: translateX(250px);
+    }
+}
+
+/* =========================
+   CAMINHÃO
+========================= */
+
+.truck {
+    position: absolute;
+
+    width: 450px;
+    height: 190px;
+
+    left: 50%;
+    bottom: 50px;
+
+    transform: translateX(-50%);
+
+    transition: .3s;
+}
+
+/* CARROCERIA */
+
+.truck-body {
+
+    position: absolute;
+
+    left: 10px;
+    bottom: 35px;
+
+    width: 280px;
+    height: 95px;
+
+    background:
+        linear-gradient(
+            #e2e5e8,
+            #9ca3aa
+        );
+
+    border: 4px solid #111;
+
+    border-radius: 12px;
+}
+
+/* CABINE */
+
+.cabin {
+
+    position: absolute;
+
+    right: 0;
+    bottom: 35px;
+
+    width: 170px;
+    height: 125px;
+
+    background:
+        linear-gradient(
+            #d7262e,
+            #8f1016
+        );
+
+    border: 4px solid #111;
+
+    border-radius:
+        22px
+        25px
+        10px
+        10px;
+}
+
+/* JANELA */
+
+.window {
+
+    position: absolute;
+
+    right: 18px;
+    top: 16px;
+
+    width: 100px;
+    height: 55px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #5d7182,
+            #17232d
+        );
+
+    border: 4px solid #111;
+
+    border-radius: 9px;
+}
+
+/* ESPELHO */
+
+.mirror {
+
+    position: absolute;
+
+    right: -18px;
+    top: 45px;
+
+    width: 15px;
+    height: 25px;
+
+    background: #111;
+
+    border-radius: 4px;
+}
+
+/* GRADE */
+
+.grill {
+
+    position: absolute;
+
+    right: -5px;
+    bottom: 12px;
+
+    width: 15px;
+    height: 55px;
+
+    background: #777;
+
+    border-radius: 4px;
+}
+
+/* RODAS */
+
+.wheel {
+
+    position: absolute;
+
+    bottom: 5px;
+
+    width: 60px;
+    height: 60px;
+
+    background: #090909;
+
+    border: 8px solid #777;
+
+    border-radius: 50%;
+
+    transition: .3s;
+}
+
+.wheel1 {
+    left: 65px;
+}
+
+.wheel2 {
+    right: 40px;
+}
+
+/* =========================
+   FAROL
+========================= */
+
+.headlight {
+
+    position: absolute;
+
+    right: -10px;
+    top: 80px;
+
+    width: 20px;
+    height: 17px;
+
+    background: #444;
+
+    border-radius: 5px;
+
+    z-index: 10;
+
+    transition: .2s;
+}
+
+/* FEIXE DE LUZ */
+
+.light-beam {
+
+    position: absolute;
+
+    display: none;
+
+    right: -5px;
+    top: 50px;
+
+    width: 650px;
+    height: 220px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255,255,180,.9),
+            rgba(255,255,180,.25),
+            transparent
+        );
+
+    clip-path:
+        polygon(
+            0 43%,
+            100% 0,
+            100% 100%,
+            0 57%
+        );
+
+    filter: blur(4px);
+
+    z-index: 2;
+
+    animation: lightOn .5s ease;
+}
+
+@keyframes lightOn {
+
+    from {
+        width: 40px;
+        opacity: 0;
+    }
+
+    to {
+        width: 650px;
+        opacity: 1;
+    }
+}
+
+/* FAROL ACESO */
+
+.lights-on .headlight {
+
+    background: #fffbd0;
+
+    box-shadow:
+        0 0 12px #fff,
+        0 0 30px #ffe66d,
+        0 0 55px #ffe66d;
+}
+
+.lights-on .light-beam {
+
+    display: block;
+}
+
+/* =========================
+   SETA
+========================= */
+
+.turn-signal {
+
+    position: absolute;
+
+    right: -10px;
+    top: 103px;
+
+    width: 18px;
+    height: 13px;
+
+    background: #5c4200;
+
+    border-radius: 4px;
+
+    z-index: 11;
+}
+
+.blinking .turn-signal {
+
+    animation: blink .45s infinite alternate;
+}
+
+@keyframes blink {
+
+    from {
+        background: #5c4200;
+    }
+
+    to {
+        background: #ffae00;
+
+        box-shadow:
+            0 0 20px #ffae00;
+    }
+}
+
+/* =========================
+   LANTERNA TRASEIRA
+========================= */
+
+.rear-light {
+
+    position: absolute;
+
+    left: 0;
+    bottom: 65px;
+
+    width: 15px;
+    height: 35px;
+
+    background: #350000;
+
+    border-radius: 4px;
+}
+
+.rear-on .rear-light {
+
+    background: red;
+
+    box-shadow:
+        0 0 12px red,
+        0 0 25px red;
+}
+
+/* =========================
+   ANIMAÇÃO DO PNEU
+========================= */
+
+.wheels-moving .wheel {
+
+    animation:
+        wheelSpin .6s linear infinite;
+}
+
+@keyframes wheelSpin {
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================
+   PERGUNTA
+========================= */
+
+.question {
+
+    margin-top: 20px;
+
+    text-align: center;
+
+    font-size: 27px;
+
+    font-weight: bold;
+}
+
+/* =========================
+   BOTÕES
+========================= */
+
+.answers {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 14px;
+
+    flex-wrap: wrap;
+
+    margin-top: 20px;
+}
+
+.answer {
+
+    min-width: 180px;
+
+    padding: 16px 25px;
+
+    border: none;
+
+    border-radius: 13px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    background: #f1f3f5;
+
+    color: #111;
+
+    transition: .2s;
+}
+
+.answer:hover {
+
+    transform:
+        translateY(-3px)
+        scale(1.02);
+
+    background: #ffd43b;
+}
+
+.answer.correct {
+
+    background: #40c057 !important;
+
+    color: white;
+}
+
+.answer.wrong {
+
+    background: #fa5252 !important;
+
+    color: white;
+}
+
+/* =========================
+   MENSAGEM
+========================= */
+
+.message {
+
+    min-height: 35px;
+
+    text-align: center;
+
+    margin-top: 18px;
+
+    font-size: 21px;
+
+    font-weight: bold;
+}
+
+/* =========================
+   PRÓXIMA
+========================= */
+
+.next {
+
+    display: none;
+
+    margin:
+        10px
+        auto
+        0;
+
+    padding:
+        14px
+        35px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #ffd43b;
+
+    color: #111;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+/* =========================
+   PLACAR
+========================= */
+
+.score {
+
+    text-align: center;
+
+    color: #bfc6cf;
+
+    margin-top: 15px;
+}
+
+/* =========================
+   TREMER
+========================= */
+
+.shake {
+
+    animation: shake .35s;
+}
+
+@keyframes shake {
+
+    25% {
+        transform:
+            translateX(-5px);
+    }
+
+    50% {
+        transform:
+            translateX(5px);
+    }
+
+    75% {
+        transform:
+            translateX(-5px);
+    }
+}
+
+/* =========================
+   FINAL
+========================= */
+
+.finish {
+
+    text-align: center;
+
+    padding: 30px;
+}
+
+.finish h2 {
+
+    font-size: 34px;
+}
+
 </style>
 </head>
+
 <body>
-<div class="wrap">
-<div class="logo">🚛 TACÓGRAFOS GUAÇU & ACESSÓRIOS</div>
-<div class="sub">DESAFIO DO CAMINHONEIRO</div>
-<div class="card">
-<div id="start">
-<h2>🔐 DESCUBRA O WI-FI!</h2>
-<p>Chegou no pátio e quer internet? Primeiro prove que é caminhoneiro de verdade 😂</p>
-<button class="primary" onclick="start()">COMEÇAR DESAFIO</button>
+
+<div class="game">
+
+    <div class="header">
+
+        <h1>🚛 DESAFIO DO CAMINHÃO</h1>
+
+        <p>
+            Acerte a peça e veja o caminhão reagir!
+        </p>
+
+    </div>
+
+    <div class="panel">
+
+        <!-- CENA -->
+
+        <div class="scene" id="scene">
+
+            <div class="moon"></div>
+
+            <div class="star star1"></div>
+            <div class="star star2"></div>
+            <div class="star star3"></div>
+            <div class="star star4"></div>
+            <div class="star star5"></div>
+
+            <div class="road">
+
+                <div class="road-line line1"></div>
+                <div class="road-line line2"></div>
+                <div class="road-line line3"></div>
+
+            </div>
+
+            <!-- CAMINHÃO -->
+
+            <div class="truck" id="truck">
+
+                <div class="truck-body">
+
+                    <div class="rear-light"></div>
+
+                </div>
+
+                <div class="cabin">
+
+                    <div class="window"></div>
+
+                    <div class="mirror"></div>
+
+                    <div class="grill"></div>
+
+                    <!-- FAROL -->
+
+                    <div class="headlight"></div>
+
+                    <!-- FEIXE DE LUZ -->
+
+                    <div class="light-beam"></div>
+
+                    <!-- SETA -->
+
+                    <div class="turn-signal"></div>
+
+                </div>
+
+                <!-- RODAS -->
+
+                <div class="wheel wheel1"></div>
+
+                <div class="wheel wheel2"></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PERGUNTA -->
+
+        <div
+            class="question"
+            id="question">
+        </div>
+
+
+        <!-- RESPOSTAS -->
+
+        <div
+            class="answers"
+            id="answers">
+        </div>
+
+
+        <!-- MENSAGEM -->
+
+        <div
+            class="message"
+            id="message">
+        </div>
+
+
+        <!-- PRÓXIMA -->
+
+        <button
+            class="next"
+            id="next"
+            onclick="nextQuestion()">
+
+            PRÓXIMA PERGUNTA ➜
+
+        </button>
+
+
+        <!-- PLACAR -->
+
+        <div
+            class="score"
+            id="score">
+        </div>
+
+    </div>
+
 </div>
 
-<div id="game" class="hidden">
-<p><b>FASE <span id="fase">1</span>/5</b></p>
-<div class="bar"><i id="progress"></i></div>
-<div class="road"><div class="truck" id="truck">🚛</div><div class="obstacle" id="obs">🛞</div></div>
-<h3 id="question"></h3>
-<div id="answers"></div>
-<p class="small">Acertou? O caminhão avança. Errou? Vai ter que pagar o café da oficina! 😂</p>
-</div>
-
-<div id="win" class="hidden">
-<div class="win">🏁 PARABÉNS! 🏁</div>
-<p>Você venceu o Desafio do Caminhoneiro!</p>
-<p>Como prêmio, a oficina liberou o Wi-Fi:</p>
-<p><b>📶 REDE</b><br>WIFI-VIVOFIBRA</p>
-<p><b>🔑 SENHA</b></p>
-<div class="senha">dayane16dayane16</div>
-<button class="primary" onclick="navigator.clipboard?.writeText('dayane16dayane16')">COPIAR SENHA</button>
-<p class="small">Boa viagem e volte sempre! 🚛💨</p>
-</div>
-</div>
-</div>
 
 <script>
-const qs=[
-["Qual peça ajuda a iluminar a estrada?","Farol","Volante","Banco",0],
-["Qual desses é usado para medir tempo de condução?","Rádio","Tacógrafo","Buzina",1],
-["O que o caminhão usa para rodar?","Pneus","Espelhos","Tapete",0],
-["Qual acessório ajuda a refrescar a cabine?","Climatizador","Calota","Lanterna",0],
-["Chegou na oficina. O que você faz primeiro?","Ignora tudo","Confere o caminhão","Vai embora",1]
+
+/* =====================================
+   PERGUNTAS
+===================================== */
+
+const questions = [
+
+    {
+        question:
+            "Qual peça ajuda a iluminar a estrada?",
+
+        correct:
+            "Farol",
+
+        options:
+            [
+                "Farol",
+                "Pneu",
+                "Retrovisor"
+            ],
+
+        effect:
+            "farol"
+    },
+
+    {
+        question:
+            "Qual peça indica que o caminhão vai virar?",
+
+        correct:
+            "Seta",
+
+        options:
+            [
+                "Radiador",
+                "Seta",
+                "Banco"
+            ],
+
+        effect:
+            "seta"
+    },
+
+    {
+        question:
+            "Qual peça mantém o caminhão em contato com o chão?",
+
+        correct:
+            "Pneu",
+
+        options:
+            [
+                "Pneu",
+                "Farol",
+                "Buzina"
+            ],
+
+        effect:
+            "pneu"
+    },
+
+    {
+        question:
+            "Qual peça serve para avisar outros veículos?",
+
+        correct:
+            "Buzina",
+
+        options:
+            [
+                "Buzina",
+                "Tanque",
+                "Lanterna"
+            ],
+
+        effect:
+            "buzina"
+    },
+
+    {
+        question:
+            "Qual peça ilumina a parte traseira do caminhão?",
+
+        correct:
+            "Lanterna",
+
+        options:
+            [
+                "Lanterna",
+                "Volante",
+                "Filtro"
+            ],
+
+        effect:
+            "lanterna"
+    }
+
 ];
-let n=0;
-function start(){document.getElementById("start").classList.add("hidden");document.getElementById("game").classList.remove("hidden");show()}
-function show(){
- document.getElementById("fase").textContent=n+1;
- document.getElementById("progress").style.width=(n*20)+"%";
- document.getElementById("question").textContent=qs[n][0];
- const a=document.getElementById("answers");a.innerHTML="";
- qs[n].slice(1,4).forEach((x,i)=>{let b=document.createElement("button");b.textContent=x;b.className=i===qs[n][4]?"primary":"danger";b.onclick=()=>answer(i);a.appendChild(b)})
+
+
+/* =====================================
+   VARIÁVEIS
+===================================== */
+
+let currentQuestion = 0;
+
+let points = 0;
+
+
+/* =====================================
+   ELEMENTOS
+===================================== */
+
+const questionElement =
+    document.getElementById("question");
+
+const answersElement =
+    document.getElementById("answers");
+
+const messageElement =
+    document.getElementById("message");
+
+const nextButton =
+    document.getElementById("next");
+
+const scoreElement =
+    document.getElementById("score");
+
+const scene =
+    document.getElementById("scene");
+
+const truck =
+    document.getElementById("truck");
+
+
+/* =====================================
+   MOSTRAR PERGUNTA
+===================================== */
+
+function showQuestion() {
+
+    const q =
+        questions[currentQuestion];
+
+    questionElement.textContent =
+        q.question;
+
+    answersElement.innerHTML = "";
+
+    messageElement.textContent = "";
+
+    nextButton.style.display =
+        "none";
+
+    scene.className =
+        "scene";
+
+    truck.className =
+        "truck";
+
+
+    q.options.forEach(option => {
+
+        const button =
+            document.createElement("button");
+
+        button.className =
+            "answer";
+
+        button.textContent =
+            option;
+
+        button.onclick =
+            () => checkAnswer(
+                option,
+                button
+            );
+
+        answersElement.appendChild(
+            button
+        );
+
+    });
+
+
+    scoreElement.textContent =
+        `Pergunta ${
+            currentQuestion + 1
+        } de ${
+            questions.length
+        } • Pontos: ${points}`;
+
 }
-function answer(i){
- if(i!==qs[n][4]){alert("💥 OPA! Resposta errada! O caminhão atolou 😂");return}
- document.getElementById("truck").style.left=Math.min(18+n*19,390)+"px";
- n++;
- if(n>=qs.length){document.getElementById("game").classList.add("hidden");document.getElementById("win").classList.remove("hidden");}
- else setTimeout(show,300);
+
+
+/* =====================================
+   VERIFICAR RESPOSTA
+===================================== */
+
+function checkAnswer(
+    selected,
+    button
+) {
+
+    const q =
+        questions[currentQuestion];
+
+
+    /* DESABILITA OS BOTÕES */
+
+    const buttons =
+        document.querySelectorAll(
+            ".answer"
+        );
+
+    buttons.forEach(btn => {
+
+        btn.disabled = true;
+
+    });
+
+
+    /* ================================
+       RESPOSTA CERTA
+    ================================= */
+
+    if (
+        selected ===
+        q.correct
+    ) {
+
+        points++;
+
+        button.classList.add(
+            "correct"
+        );
+
+
+        messageElement.textContent =
+            "✅ CORRETO!";
+
+
+        activateEffect(
+            q.effect
+        );
+
+
+        nextButton.style.display =
+            "block";
+
+
+        scoreElement.textContent =
+            `Pergunta ${
+                currentQuestion + 1
+            } de ${
+                questions.length
+            } • Pontos: ${points}`;
+
+    }
+
+
+    /* ================================
+       RESPOSTA ERRADA
+    ================================= */
+
+    else {
+
+        button.classList.add(
+            "wrong"
+        );
+
+
+        messageElement.textContent =
+            "❌ Resposta errada!";
+
+
+        nextButton.style.display =
+            "block";
+
+    }
+
 }
+
+
+/* =====================================
+   EFEITOS DO CAMINHÃO
+===================================== */
+
+function activateEffect(effect) {
+
+
+    /* FAROL */
+
+    if (
+        effect ===
+        "farol"
+    ) {
+
+        scene.classList.add(
+            "lights-on"
+        );
+
+        messageElement.textContent =
+            "💡 FAROL ACESO! A estrada ficou iluminada!";
+
+    }
+
+
+    /* SETA */
+
+    if (
+        effect ===
+        "seta"
+    ) {
+
+        truck.classList.add(
+            "blinking"
+        );
+
+        messageElement.textContent =
+            "🟠 SETA PISCANDO!";
+
+    }
+
+
+    /* PNEU */
+
+    if (
+        effect ===
+        "pneu"
+    ) {
+
+        truck.classList.add(
+            "wheels-moving"
+        );
+
+        messageElement.textContent =
+            "🛞 PNEU GIRANDO!";
+
+    }
+
+
+    /* BUZINA */
+
+    if (
+        effect ===
+        "buzina"
+    ) {
+
+        messageElement.textContent =
+            "📢 BUZINA!";
+
+        playHorn();
+
+        truck.classList.add(
+            "shake"
+        );
+
+    }
+
+
+    /* LANTERNA */
+
+    if (
+        effect ===
+        "lanterna"
+    ) {
+
+        truck.classList.add(
+            "rear-on"
+        );
+
+        messageElement.textContent =
+            "🔴 LANTERNA TRASEIRA ACESA!";
+
+    }
+
+}
+
+
+/* =====================================
+   SOM DA BUZINA
+===================================== */
+
+function playHorn() {
+
+    try {
+
+        const audio =
+            new AudioContext();
+
+        const oscillator =
+            audio.createOscillator();
+
+        const gain =
+            audio.createGain();
+
+
+        oscillator.type =
+            "square";
+
+        oscillator.frequency.value =
+            240;
+
+        gain.gain.value =
+            0.08;
+
+
+        oscillator.connect(
+            gain
+        );
+
+        gain.connect(
+            audio.destination
+        );
+
+
+        oscillator.start();
+
+
+        setTimeout(() => {
+
+            oscillator.stop();
+
+            audio.close();
+
+        }, 450);
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "Som indisponível"
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   PRÓXIMA PERGUNTA
+===================================== */
+
+function nextQuestion() {
+
+    currentQuestion++;
+
+
+    /* FIM */
+
+    if (
+        currentQuestion >=
+        questions.length
+    ) {
+
+        showFinish();
+
+        return;
+
+    }
+
+
+    showQuestion();
+
+}
+
+
+/* =====================================
+   TELA FINAL
+===================================== */
+
+function showFinish() {
+
+    questionElement.innerHTML =
+        `🏆 FIM DE JOGO!`;
+
+    answersElement.innerHTML = "";
+
+    messageElement.innerHTML =
+        `Você fez <strong>${
+            points
+        }/${questions.length}</strong> pontos!`;
+
+    nextButton.textContent =
+        "JOGAR NOVAMENTE";
+
+    nextButton.style.display =
+        "block";
+
+    nextButton.onclick =
+        restartGame;
+
+    scoreElement.textContent = "";
+
+}
+
+
+/* =====================================
+   REINICIAR
+===================================== */
+
+function restartGame() {
+
+    currentQuestion = 0;
+
+    points = 0;
+
+    nextButton.textContent =
+        "PRÓXIMA PERGUNTA ➜";
+
+    nextButton.onclick =
+        nextQuestion;
+
+    showQuestion();
+
+}
+
+
+/* =====================================
+   INICIAR
+===================================== */
+
+showQuestion();
+
 </script>
+
 </body>
 </html>
+```
